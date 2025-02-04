@@ -38,7 +38,7 @@ public class AuthenticationController {
         return ResponseEntity.ok(new ApiResponse(true, "Autenticação realizada com sucesso", token));
     }
 
-    @PostMapping("/register")
+    @PostMapping("/singup")
     public ResponseEntity<ApiResponse> register(@RequestBody @Valid UserDTO userDTO) {
         try {
             String token = authenticationService.register(userDTO).token();
