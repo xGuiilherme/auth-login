@@ -71,7 +71,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 throw new BusinessException("Email já cadastrado");
             }
             User user = User.builder()
-                    .name(userDTO.name())
+                    .name(userDTO.fullName())
                     .email(userDTO.email())
                     .password(passwordEncoder.encode(userDTO.password()))
                     .role(userDTO.role())

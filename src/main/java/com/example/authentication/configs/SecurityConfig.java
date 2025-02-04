@@ -52,8 +52,8 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/swagger*/**", "/h2-console/**", "/api/v1/auth/**").permitAll()
-                        .requestMatchers("/api/v1/users/**").hasAnyRole("ADMIN", "USER")
+                        .requestMatchers("/swagger*/**", "/h2-console/**").permitAll()
+                        .requestMatchers("/api/v1/auth/singup", "/api/v1/auth/login", "/api/v1/auth/reset-password").permitAll()
                         .anyRequest().authenticated()
                 )
                 .headers(headers -> headers

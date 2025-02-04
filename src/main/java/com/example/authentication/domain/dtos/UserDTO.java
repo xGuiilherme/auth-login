@@ -15,7 +15,7 @@ public record UserDTO(
         
         @NotBlank(message = "O nome é obrigatório")
         @Size(min = 3, max = 255, message = "O nome deve ter entre 3 e 255 caracteres")
-        String name,
+        String fullName,
 
         @NotBlank(message = "O email é obrigatório")
         @Email(message = "Email inválido")
