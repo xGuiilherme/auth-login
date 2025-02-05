@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.authentication.domain.dtos.AuthenticationDTO;
+import com.example.authentication.domain.dtos.AuthenticationResponse;
 import com.example.authentication.domain.dtos.ForgotPasswordDTO;
 import com.example.authentication.domain.dtos.ResetPasswordDTO;
 import com.example.authentication.domain.dtos.UserDTO;
@@ -34,31 +35,20 @@ public class AuthenticationController {
     
     @PostMapping("/login")
     public ResponseEntity<ApiResponse> authenticate(@RequestBody @Valid AuthenticationDTO authenticationDTO) {
-        String token = authenticationService.authenticate(authenticationDTO).token();
+        AuthenticationResponse token = authenticationService.authenticate(authenticationDTO);
         return ResponseEntity.ok(new ApiResponse(true, "Autenticação realizada com sucesso", token));
     }
 
     @PostMapping("/singup")
     public ResponseEntity<ApiResponse> register(@RequestBody @Valid UserDTO userDTO) {
-        try {
-            String token = authenticationService.register(userDTO).token();
-            return ResponseEntity.ok(new ApiResponse(true, "Usuário registrado com sucesso", token));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ApiResponse(false, "Erro no servidor: " + e.getMessage(), null));
-        }
+        AuthenticationResponse token = authenticationService.register(userDTO);
+        return ResponseEntity.ok(new ApiResponse(true, "Usuário cadastrado com sucesso", token));
     }
 
     @PostMapping("/forgot-password")
     public ResponseEntity<ApiResponse> forgotPassword(@RequestBody @Valid ForgotPasswordDTO forgotPasswordDTO) {
-        try {
-            String token = authenticationService.requestPasswordReset(forgotPasswordDTO.email());
-            return ResponseEntity.ok(new ApiResponse(true, 
-                "Token de redefinição de senha gerado com sucesso", token));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ApiResponse(false, "Erro ao processar solicitação: " + e.getMessage(), null));
-        }
+        String token = authenticationService.requestPasswordReset(forgotPasswordDTO.email());
+        return ResponseEntity.ok(new ApiResponse(true, "Token de redefinição de senha gerado com sucesso", token));
     }
 
     @PutMapping("/reset-password")

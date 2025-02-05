@@ -30,7 +30,7 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity(name = "users")
+@Entity
 @Table(name = "users")
 public class User implements UserDetails {
 
@@ -59,6 +59,9 @@ public class User implements UserDetails {
 
     @Column(name = "reset_token_expiration_time")
     private LocalDateTime resetPasswordTokenExpiry;
+
+    @Column(name = "is_active")
+    private boolean enabled;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -92,6 +95,6 @@ public class User implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return this.enabled;
     }    
 }

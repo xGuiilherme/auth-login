@@ -46,20 +46,18 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public AuthenticationResponse authenticate(AuthenticationDTO authenticationDTO) {
         try {
-            authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(
-                            authenticationDTO.email(),
-
-                            authenticationDTO.password()
-                    )
-            );
             var user = userRepository.findByEmail(authenticationDTO.email())
-                    .orElseThrow(() -> new BusinessException("Usuário não encontrado"));
+                    .filter(User::isEnabled)
+                    .orElseThrow(() -> new BusinessException("Usuário inativo ou não cadastrado"));
+
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(authenticationDTO.email(),authenticationDTO.password())
+            );            
 
             var token = jwtService.generateToken(user);
             return new AuthenticationResponse(token, "Bearer");
         } catch (BadCredentialsException e) {
-            throw new InvalidCredentialsException("Email ou senha inválidos: " + e.getMessage());
+            throw new InvalidCredentialsException("Email ou senha inválidos");
         }
     }
 
@@ -75,6 +73,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                     .email(userDTO.email())
                     .password(passwordEncoder.encode(userDTO.password()))
                     .role(userDTO.role())
+                    .enabled(true)
                     .build();
 
             var savedUser = userRepository.save(user);

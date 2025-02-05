@@ -8,7 +8,6 @@ import lombok.Builder;
 public record AuthenticationDTO(
         @NotBlank(message = "O email é obrigatório")
         @Email(message = "Email inválido")
-
         String email,
 
         @NotBlank(message = "A senha é obrigatória")
