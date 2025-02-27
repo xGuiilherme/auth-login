@@ -1,5 +1,7 @@
-## Sistema de Login e Signup com Spring Security e JWT Tokens!
-Este projeto implementa um sistema de autenticação baseado em JSON Web Tokens (JWT) usando Spring Boot. Ele permite o cadastro, login, recuperação de senha e autorização de usuários com diferentes papéis (ADMIN e USER). O sistema é stateless e utiliza boas práticas de segurança, como criptografia de senhas e validação de tokens.
+## Sistema de Login e Signup com Spring Security, JWT e RabbitMQ!
+Este projeto foi separado em duas APIs para implementa um sistema de autenticação baseado em JSON Web Tokens (JWT) usando Spring Boot. Ele permite o cadastro, login, recuperação de senha e autorização de usuários com diferentes papéis (ADMIN e USER). O sistema é stateless e utiliza boas práticas de segurança, como criptografia de senhas e validação de tokens.
+
+Esse microsserviço faz uma chamada para uma api externa do email link do [ms-email](https://github.com/xGuiilherme/ms-email).
 
 ## Funcionalidades Principais
 - Cadastro de Usuário: Permite criar novos usuários com nome, email e senha.
@@ -26,7 +28,11 @@ Este projeto implementa um sistema de autenticação baseado em JSON Web Tokens 
 ```
 {
     "success": true,
-    "message": "Usuário registrado com sucesso"
+    "message": "Usuário cadastrado com sucesso",
+    "data": {
+        "token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIi-_",
+        "type": "Bearer"
+    }
 }
 ```
 ### User Login
@@ -45,16 +51,19 @@ Este projeto implementa um sistema de autenticação baseado em JSON Web Tokens 
 {
     "success": true,
     "message": "Autenticação realizada com sucesso",
-    "token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJsZW8uc2lsdmFAZXhhb=..."
+    "data": {
+        "token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJndW-_",
+        "type": "Bearer"
+    }
 }
 ```
 ### Solicitação de resete de senha
 - Method: POST
 - Path: ```http://localhost:8081/api/v1/auth/forgot-password```
 - Descrição: Um endpoint protegido que requer autenticação para acesso de recuperação da senha
-- Authentication: Bearer Token
+- Authorization - Auth Type: Bearer Token
 - Exemplo:
-  - Bearer Token: ```eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJTaGltYmh1Iiwic3ViIjoiSldUIFRva2VuIiwidXNlcm5hbWUiOiJza0BnbWFpbC5jb20iLCJyb2xlIjoiUk9MRV9VU0VSIiwiaWF0IjoxNjg1Njc3Mzg3LCJleHAiOjE2OD```
+  - Bearer Token: ```eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJTaGltYmh1Iiwic3ViIjoiSldUIFRva2VuIi-_```
 - Request Body: Dados do usuário no formato JSON (e-mail)
 ```
 {
@@ -65,13 +74,13 @@ Este projeto implementa um sistema de autenticação baseado em JSON Web Tokens 
 ```
 {
     "success": true,
-    "message": "Token de redefinição de senha gerado com sucesso",
-    "token": "1949b1a1-6a34-4449-bd03-25f4fc2e1bc6"
+    "message": "Email de recuperação enviado!",
+    "token": "1949b1a1-6a34-4449-bd03-25f4fc2e1bc6-_"
 }
 ```
 ### Criar uma nova senha
 - Method: PUT
-- Path: ```http://localhost:8081/api/v1/auth/reset-password```
+- Path: ```http://localhost:8081/api/v1/auth/reset-password?token=```
 - Descrição: Um endpoint protegido que requer autenticação passando o token gerado via parâmetro para criar uma nova senha
 - Params: token: ```d108d03f-09d4-42c0-8771-8924e80d6daf```
 - Request Body: Dados do usuário no formato JSON (email e password)
@@ -85,15 +94,17 @@ Este projeto implementa um sistema de autenticação baseado em JSON Web Tokens 
 ```
 {
     "success": true,
-    "message": "Senha redefinida com sucesso"
+    "message": "Senha redefinida com sucesso",
+    "data": null
 }
 ```
 
 ## Tecnologias Utilizadas
 - Java 21
 - Spring Boot 3.4.x
-- Spring Security.
+- Spring Security
+- Open Feign
+- RabbitMQ
 - JWT (JSON Web Token)
-- H2 Database.
-- Lombok.
-- Maven.
+- MySQL
+- Maven
