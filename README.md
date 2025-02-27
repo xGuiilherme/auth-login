@@ -11,7 +11,7 @@ Este projeto implementa um sistema de autenticação baseado em JSON Web Tokens 
 ## API Endpoints
 ### User Signup
 - Method: POST
-- Path: ```http://localhost:8081/api/v1/auth/singup```
+- Path: ```http://localhost:8081/api/v1/auth/signup```
 - Descrição: Cadastra novos usuários
 - Request Body: Dados do usuário no formato JSON (name, email, password)
 ```

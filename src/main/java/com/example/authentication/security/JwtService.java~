@@ -26,8 +26,8 @@ public class JwtService {
     @Value("${jwt.secret}")
     private String secretKey;
 
-    private static final long JWT_EXPIRATION = 24 * 60 * 60 * 1000; // 24 horas
-    //private static final long JWT_EXPIRATION = 1 * 60 * 1000;
+    //private static final long JWT_EXPIRATION = 24 * 60 * 60 * 1000; // 24 horas
+    private static final long JWT_EXPIRATION = 1 * 60 * 1000;
 
     public String extractUsername(String token) {
         try {

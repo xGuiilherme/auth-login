@@ -36,7 +36,7 @@ public class AuthenticationController {
     public ResponseEntity<ApiResponse> forgotPassword(@RequestBody @Valid ForgotPasswordDTO dto) {
         String token = authenticationService.requestPasswordReset(dto.email());
 
-        EmailRequest emailRequest = new EmailRequest(dto.email(), "REDEFINIÇÃO DE SENHA", token);
+        EmailRequest emailRequest = new EmailRequest(dto.email(), "Redefinição de Senha", token);
 
         emailServiceClient.sendEmail(emailRequest);
         return ResponseEntity.ok(new ApiResponse(true, "Email de recuperação enviado!", token));

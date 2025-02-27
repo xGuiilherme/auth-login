@@ -1,8 +1,16 @@
 package com.example.authentication.services.impl;
 
-import java.time.LocalDateTime;
-import java.util.UUID;
-
+import com.example.authentication.client.EmailServiceClient;
+import com.example.authentication.domain.dtos.AuthenticationDTO;
+import com.example.authentication.domain.dtos.AuthenticationResponse;
+import com.example.authentication.domain.dtos.UserDTO;
+import com.example.authentication.domain.entities.User;
+import com.example.authentication.exceptions.*;
+import com.example.authentication.repositories.UserRepository;
+import com.example.authentication.security.JwtService;
+import com.example.authentication.services.AuthenticationService;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -10,38 +18,21 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.example.authentication.domain.dtos.AuthenticationDTO;
-import com.example.authentication.domain.dtos.AuthenticationResponse;
-import com.example.authentication.domain.dtos.UserDTO;
-import com.example.authentication.domain.entities.User;
-import com.example.authentication.exceptions.BusinessException;
-import com.example.authentication.exceptions.InvalidCredentialsException;
-import com.example.authentication.exceptions.ResourceNotFoundException;
-import com.example.authentication.exceptions.TokenExpiredException;
-import com.example.authentication.exceptions.UserAlreadyExistsException;
-import com.example.authentication.repositories.UserRepository;
-import com.example.authentication.security.JwtService;
-import com.example.authentication.services.AuthenticationService;
-
-import jakarta.transaction.Transactional;
+import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Value("${jwt.token.expiration}")
     private long resetPasswordTokenExpiration;
 
+    private final EmailServiceClient emailServiceClient;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
-
-    public AuthenticationServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService, AuthenticationManager authenticationManager) {
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.jwtService = jwtService;
-        this.authenticationManager = authenticationManager;
-    }
 
     @Override
     public AuthenticationResponse authenticate(AuthenticationDTO authenticationDTO) {
@@ -52,7 +43,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(authenticationDTO.email(),authenticationDTO.password())
-            );            
+            );
 
             var token = jwtService.generateToken(user);
             return new AuthenticationResponse(token, "Bearer");
@@ -89,10 +80,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         try {
             User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
+
             String token = generateResetToken();
             user.setResetPasswordToken(token);
-            //user.setResetPasswordTokenExpiry(LocalDateTime.now().plusHours(1));
-            user.setResetPasswordTokenExpiry(LocalDateTime.now().plusMinutes(1));
+            user.setResetPasswordTokenExpiry(LocalDateTime.now().plusMinutes(10));
             userRepository.save(user);
 
             return token;

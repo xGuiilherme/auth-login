@@ -39,7 +39,7 @@ public class User implements UserDetails {
     private Long id;
 
     @Size(min = 3, max = 255, message = "O nome deve ter entre 3 e 255 caracteres")
-    @Column(name = "fullName")
+    @Column(name = "full_name")
     private String name;
 
     @Column(unique = true)

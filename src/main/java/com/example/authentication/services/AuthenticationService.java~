@@ -13,5 +13,7 @@ public interface AuthenticationService {
 
     String requestPasswordReset(String email);
 
+    void sendPasswordResetEmail(PasswordResetEmailRequest request);
+
     void resetPassword(String token, String password, String passwordConfirmation);
 }
